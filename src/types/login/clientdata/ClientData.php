@@ -82,6 +82,8 @@ final class ClientData{
 	/** @required */
 	public int $GuiScale;
 
+	public bool $IsEditorMode = false;
+
 	/** @required */
 	public string $LanguageCode;
 
