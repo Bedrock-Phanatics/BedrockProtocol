@@ -17,18 +17,22 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use function array_fill;
+use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use function count;
 
 class SubChunkPacketHeightMapInfo{
+
+	private const ROW_LENGTH = 16;
+	private const TOTAL_LENGTH = self::ROW_LENGTH ** 2;
 
 	/**
 	 * @param int[] $heights ZZZZXXXX key bit order
 	 * @phpstan-param list<int> $heights
 	 */
 	public function __construct(private array $heights){
-		if(count($heights) !== 256){
-			throw new \InvalidArgumentException("Expected exactly 256 heightmap values");
+		if(count($heights) !== self::TOTAL_LENGTH){
+			throw new \InvalidArgumentException("Expected exactly " . self::TOTAL_LENGTH . " heightmap values");
 		}
 	}
 
@@ -41,41 +45,24 @@ class SubChunkPacketHeightMapInfo{
 
 	public static function read(ByteBufferReader $in) : self{
 		$heights = [];
-		for($i = 0; $i < 256; ++$i){
+		for($i = 0; $i < self::TOTAL_LENGTH; ++$i){
+			if(($i & (self::ROW_LENGTH - 1)) === 0){ //start of a new row
+				$rowLength = VarInt::readUnsignedInt($in);
+				if($rowLength !== self::ROW_LENGTH){
+					throw new PacketDecodeException("Expected height map row to hold exactly " . self::ROW_LENGTH . " heights, got $rowLength");
+				}
+			}
 			$heights[] = Byte::readSigned($in);
 		}
 		return new self($heights);
 	}
 
 	public function write(ByteBufferWriter $out) : void{
-		for($i = 0; $i < 256; ++$i){
-			Byte::writeSigned($out, $this->heights[$i]);
-		}
-	}
-
-	public static function allTooLow() : self{
-		return new self(array_fill(0, 256, -1));
-	}
-
-	public static function allTooHigh() : self{
-		return new self(array_fill(0, 256, 16));
-	}
-
-	public function isAllTooLow() : bool{
-		foreach($this->heights as $height){
-			if($height >= 0){
-				return false;
+		foreach($this->heights as $i => $height){
+			if(($i & (self::ROW_LENGTH - 1)) === 0){ //start of a new row
+				VarInt::writeUnsignedInt($out, self::ROW_LENGTH);
 			}
+			Byte::writeSigned($out, $height);
 		}
-		return true;
-	}
-
-	public function isAllTooHigh() : bool{
-		foreach($this->heights as $height){
-			if($height <= 15){
-				return false;
-			}
-		}
-		return true;
 	}
 }
