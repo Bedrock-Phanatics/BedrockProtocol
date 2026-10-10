@@ -18,9 +18,12 @@ use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use function count;
 
 final class InventoryTransactionChangedSlotsHack{
+	public const MAX_CHANGED_SLOTS = 256;
+
 	/**
 	 * @param int[] $changedSlotIndexes
 	 */
@@ -36,8 +39,12 @@ final class InventoryTransactionChangedSlotsHack{
 
 	public static function read(ByteBufferReader $in) : self{
 		$containerId = Byte::readUnsigned($in);
+		$len = VarInt::readUnsignedInt($in);
+		if($len > self::MAX_CHANGED_SLOTS){
+			throw new PacketDecodeException("Too many changed slots in inventory transaction", observed: $len, limit: self::MAX_CHANGED_SLOTS);
+		}
 		$changedSlots = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
+		for($i = 0; $i < $len; ++$i){
 			$changedSlots[] = Byte::readUnsigned($in);
 		}
 		return new self($containerId, $changedSlots);
