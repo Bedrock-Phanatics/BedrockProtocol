@@ -16,7 +16,17 @@ namespace pocketmine\network\mcpe\protocol;
 
 final class PacketDecodeException extends \RuntimeException{
 
+	public function __construct(
+		string $message = "",
+		int $code = 0,
+		?\Throwable $previous = null,
+		public readonly ?int $observed = null,
+		public readonly ?int $limit = null
+	){
+		parent::__construct($message, $code, $previous);
+	}
+
 	public static function wrap(\Throwable $previous, ?string $prefix = null) : self{
-		return new self(($prefix !== null ? $prefix . ": " : "") . $previous->getMessage(), 0, $previous);
+		return new self(($prefix !== null ? $prefix . ": " : "") . $previous->getMessage(), 0, $previous, $previous instanceof self ? $previous->observed : null, $previous instanceof self ? $previous->limit : null);
 	}
 }

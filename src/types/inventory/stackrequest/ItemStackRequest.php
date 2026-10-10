@@ -24,6 +24,8 @@ use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 final class ItemStackRequest{
+	public const MAX_ACTIONS = 60;
+
 	/**
 	 * @param ItemStackRequestAction[] $actions
 	 * @param string[]                 $filterStrings
@@ -83,15 +85,20 @@ final class ItemStackRequest{
 
 	public static function read(ByteBufferReader $in) : self{
 		$requestId = CommonTypes::readItemStackRequestId($in);
-		$actions = CommonTypes::readList($in, static function(ByteBufferReader $in) : ItemStackRequestAction{
+		$count = VarInt::readUnsignedInt($in);
+		if($count > self::MAX_ACTIONS){
+			throw new PacketDecodeException("Too many actions in ItemStackRequest", observed: $count, limit: self::MAX_ACTIONS);
+		}
+		$actions = [];
+		for($i = 0; $i < $count; ++$i){
 			$typeId = VarInt::readUnsignedInt($in);
 			$innerTypeId = Byte::readUnsigned($in);
 			$expectedInnerType = ItemStackRequestActionType::INNER_TYPES[$typeId] ?? "unknown";
 			if($expectedInnerType !== $innerTypeId){
 				throw new PacketDecodeException("ItemStackRequestAction type mismatch: outer type $typeId, expected inner type $expectedInnerType, actual inner type $innerTypeId");
 			}
-			return self::readAction($in, $typeId);
-		});
+			$actions[] = self::readAction($in, $typeId);
+		}
 		$filterStrings = CommonTypes::readList($in, CommonTypes::getString(...));
 		$filterStringCause = LE::readSignedInt($in);
 		return new self($requestId, $actions, $filterStrings, $filterStringCause);
