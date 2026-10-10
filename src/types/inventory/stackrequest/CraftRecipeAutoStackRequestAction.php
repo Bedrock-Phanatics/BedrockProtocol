@@ -30,6 +30,7 @@ final class CraftRecipeAutoStackRequestAction extends ItemStackRequestAction{
 	use GetTypeIdFromConstTrait;
 
 	public const ID = ItemStackRequestActionType::CRAFTING_RECIPE_AUTO;
+	public const MAX_INGREDIENTS = 128;
 
 	/**
 	 * @param RecipeIngredient[] $ingredients
@@ -54,7 +55,7 @@ final class CraftRecipeAutoStackRequestAction extends ItemStackRequestAction{
 	public static function read(ByteBufferReader $in) : self{
 		$recipeId = CommonTypes::readRecipeNetId($in);
 		$repetitions = Byte::readUnsigned($in);
-		$ingredients = CommonTypes::readList($in, CommonTypes::readStackRequestIngredient(...));
+		$ingredients = CommonTypes::readList($in, CommonTypes::readStackRequestIngredient(...), self::MAX_INGREDIENTS);
 		return new self($recipeId, $repetitions, $ingredients);
 	}
 

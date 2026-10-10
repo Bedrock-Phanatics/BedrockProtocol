@@ -61,7 +61,11 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 
 		$this->requestChangedSlots = CommonTypes::readOptional($in, static function(ByteBufferReader $in) : array{
 			$result = [];
-			for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
+			$len = VarInt::readUnsignedInt($in);
+			if($len > InventoryTransactionChangedSlotsHack::MAX_CHANGED_CONTAINERS){
+				throw new PacketDecodeException("Too many list entries", observed: $len, limit: InventoryTransactionChangedSlotsHack::MAX_CHANGED_CONTAINERS);
+			}
+			for($i = 0; $i < $len; ++$i){
 				$result[] = InventoryTransactionChangedSlotsHack::read($in);
 			}
 			return $result;
