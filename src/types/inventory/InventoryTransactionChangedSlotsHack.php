@@ -22,6 +22,7 @@ use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use function count;
 
 final class InventoryTransactionChangedSlotsHack{
+	public const MAX_CHANGED_CONTAINERS = 10;
 	public const MAX_CHANGED_SLOTS = 256;
 
 	/**

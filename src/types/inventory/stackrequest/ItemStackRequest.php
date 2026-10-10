@@ -25,6 +25,7 @@ use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 final class ItemStackRequest{
 	public const MAX_ACTIONS = 60;
+	public const MAX_FILTER_STRINGS = 256;
 
 	/**
 	 * @param ItemStackRequestAction[] $actions
@@ -99,7 +100,7 @@ final class ItemStackRequest{
 			}
 			$actions[] = self::readAction($in, $typeId);
 		}
-		$filterStrings = CommonTypes::readList($in, CommonTypes::getString(...));
+		$filterStrings = CommonTypes::readList($in, CommonTypes::getString(...), self::MAX_FILTER_STRINGS);
 		$filterStringCause = LE::readSignedInt($in);
 		return new self($requestId, $actions, $filterStrings, $filterStringCause);
 	}

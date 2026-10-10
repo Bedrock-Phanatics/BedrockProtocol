@@ -67,6 +67,7 @@ use function count;
 use function strlen;
 use function strrev;
 use function substr;
+use const PHP_INT_MAX;
 
 final class CommonTypes{
 
@@ -862,9 +863,13 @@ final class CommonTypes{
 	 * @phpstan-param \Closure(ByteBufferReader) : T $reader
 	 * @phpstan-return list<T>
 	 * @throws DataDecodeException
+	 * @throws PacketDecodeException
 	 */
-	public static function readList(ByteBufferReader $in, \Closure $reader) : array{
+	public static function readList(ByteBufferReader $in, \Closure $reader, int $maxCount = PHP_INT_MAX) : array{
 		$count = VarInt::readUnsignedInt($in);
+		if($count > $maxCount){
+			throw new PacketDecodeException("Too many list entries", observed: $count, limit: $maxCount);
+		}
 		$result = [];
 		for($i = 0; $i < $count; ++$i){
 			$result[] = $reader($in);

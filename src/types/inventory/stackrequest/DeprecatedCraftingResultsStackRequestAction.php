@@ -18,6 +18,7 @@ use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 use function count;
 
@@ -30,6 +31,7 @@ final class DeprecatedCraftingResultsStackRequestAction extends ItemStackRequest
 	use GetTypeIdFromConstTrait;
 
 	public const ID = ItemStackRequestActionType::CRAFTING_RESULTS_DEPRECATED_ASK_TY_LAING;
+	public const MAX_RESULTS = 256;
 
 	/**
 	 * @param DeprecatedCraftingResultsEntry[] $results
@@ -46,7 +48,11 @@ final class DeprecatedCraftingResultsStackRequestAction extends ItemStackRequest
 
 	public static function read(ByteBufferReader $in) : self{
 		$results = [];
-		for($i = 0, $len = VarInt::readUnsignedInt($in); $i < $len; ++$i){
+		$len = VarInt::readUnsignedInt($in);
+		if($len > self::MAX_RESULTS){
+			throw new PacketDecodeException("Too many list entries", observed: $len, limit: self::MAX_RESULTS);
+		}
+		for($i = 0; $i < $len; ++$i){
 			$results[] = DeprecatedCraftingResultsEntry::read($in);
 		}
 		$iterations = Byte::readUnsigned($in);

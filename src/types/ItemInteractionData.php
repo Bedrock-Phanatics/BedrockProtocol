@@ -50,7 +50,7 @@ final class ItemInteractionData{
 
 	public static function read(ByteBufferReader $in) : self{
 		$requestId = VarInt::readSignedInt($in);
-		$requestChangedSlots = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, InventoryTransactionChangedSlotsHack::read(...)));
+		$requestChangedSlots = CommonTypes::readOptional($in, static fn($in) => CommonTypes::readList($in, InventoryTransactionChangedSlotsHack::read(...), InventoryTransactionChangedSlotsHack::MAX_CHANGED_CONTAINERS));
 		$transactionData = new UseItemTransactionData();
 		CommonTypes::readDummyOptional($in);
 		CommonTypes::readDummyOptional($in);
