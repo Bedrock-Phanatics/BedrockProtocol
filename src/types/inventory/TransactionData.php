@@ -17,10 +17,12 @@ namespace pocketmine\network\mcpe\protocol\types\inventory;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\DataDecodeException;
+use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 abstract class TransactionData{
+	public const MAX_ACTIONS = 100;
 
 	/**
 	 * @var NetworkInventoryAction[]
@@ -43,7 +45,15 @@ abstract class TransactionData{
 	 * @throws PacketDecodeException
 	 */
 	final public function decode(ByteBufferReader $in) : void{
-		$this->actions = CommonTypes::readList($in, static fn($in) => (new NetworkInventoryAction())->read($in));
+		$count = VarInt::readUnsignedInt($in);
+		if($count > self::MAX_ACTIONS){
+			throw new PacketDecodeException("Too many actions in inventory transaction", observed: $count, limit: self::MAX_ACTIONS);
+		}
+		$actions = [];
+		for($i = 0; $i < $count; ++$i){
+			$actions[] = (new NetworkInventoryAction())->read($in);
+		}
+		$this->actions = $actions;
 		$this->decodeData($in);
 	}
 
