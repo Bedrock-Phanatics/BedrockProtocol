@@ -17,6 +17,8 @@ namespace pocketmine\network\mcpe\protocol;
 use PHPUnit\Framework\TestCase;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\types\shape\PacketShapeData;
 
 class DataPacketTest extends TestCase{
 
@@ -32,5 +34,13 @@ class DataPacketTest extends TestCase{
 		$pk2->decode(new ByteBufferReader($serializer->getData()));
 		self::assertSame($pk2->senderSubId, 3);
 		self::assertSame($pk2->recipientSubId, 2);
+	}
+
+	public function testShapeAttachmentUsesUniqueEntityId() : void{
+		$shape = PacketShapeData::line(1, new Vector3(0, 0, 0), new Vector3(1, 2, 3), attachedToEntityId: -42);
+		$writer = new ByteBufferWriter();
+		$shape->write($writer);
+
+		self::assertSame(-42, PacketShapeData::read(new ByteBufferReader($writer->getData()))->getAttachedToEntityId());
 	}
 }
