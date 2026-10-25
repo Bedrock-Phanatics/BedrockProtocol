@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use Bedwire\Nbt;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 
 /**
  * @phpstan-template TTagType of Tag
@@ -39,6 +39,6 @@ final class CacheableNbt{
 	}
 
 	public function getEncodedNbt() : string{
-		return $this->encodedNbt ?? ($this->encodedNbt = (new NetworkNbtSerializer())->write(new TreeRoot($this->nbtRoot)));
+		return $this->encodedNbt ?? ($this->encodedNbt = Nbt::write(new TreeRoot($this->nbtRoot), Nbt::NETWORK));
 	}
 }

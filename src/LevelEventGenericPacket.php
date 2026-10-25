@@ -14,13 +14,13 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
+use Bedwire\Nbt as NativeNbt;
+use Bedwire\NbtException;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\Tag;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 
 class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LEVEL_EVENT_GENERIC_PACKET;
@@ -48,10 +48,9 @@ class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
 
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->eventId = VarInt::readSignedInt($in);
-		$offset = $in->getOffset();
 		try{
-			$this->eventData = (new NetworkNbtSerializer())->readHeadless($in->getData(), NBT::TAG_Compound, $offset);
-		}catch(NbtDataException $e){
+			[$this->eventData, $offset] = NativeNbt::readHeadlessAt($in->getData(), NativeNbt::NETWORK, NBT::TAG_Compound, $in->getOffset());
+		}catch(NbtException $e){
 			throw PacketDecodeException::wrap($e);
 		}
 		$in->setOffset($offset);
@@ -59,7 +58,7 @@ class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
 
 	protected function encodePayload(ByteBufferWriter $out) : void{
 		VarInt::writeSignedInt($out, $this->eventId);
-		$out->writeByteArray((new NetworkNbtSerializer())->writeHeadless($this->eventData));
+		$out->writeByteArray(NativeNbt::writeHeadless($this->eventData, NativeNbt::NETWORK));
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

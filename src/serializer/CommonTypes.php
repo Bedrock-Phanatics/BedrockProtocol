@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\serializer;
 
+use Bedwire\Nbt;
+use Bedwire\NbtException;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
@@ -729,14 +731,13 @@ final class CommonTypes{
 
 	/** @throws PacketDecodeException */
 	public static function getNbtRoot(ByteBufferReader $in) : TreeRoot{
-		$offset = $in->getOffset();
 		try{
-			return (new NetworkNbtSerializer())->read($in->getData(), $offset, 512);
-		}catch(NbtDataException $e){
+			[$root, $offset] = Nbt::readAt($in->getData(), Nbt::NETWORK, $in->getOffset(), 512);
+		}catch(NbtException $e){
 			throw PacketDecodeException::wrap($e, "Failed decoding NBT root");
-		}finally{
-			$in->setOffset($offset);
 		}
+		$in->setOffset($offset);
+		return $root;
 	}
 
 	public static function getNbtCompoundRoot(ByteBufferReader $in) : CompoundTag{

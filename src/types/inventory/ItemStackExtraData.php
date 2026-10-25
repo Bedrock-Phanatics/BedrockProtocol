@@ -14,11 +14,12 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
+use Bedwire\Nbt;
+use Bedwire\NbtException;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
-use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
@@ -70,14 +71,13 @@ class ItemStackExtraData{
 			if($nbtDataVersion !== 1){
 				throw new PacketDecodeException("Unexpected NBT data version $nbtDataVersion");
 			}
-			$offset = $in->getOffset();
 			try{
-				$compound = (new LittleEndianNbtSerializer())->read($in->getData(), $offset, 512)->mustGetCompoundTag();
-			}catch(NbtDataException $e){
+				[$root, $offset] = Nbt::readAt($in->getData(), Nbt::BEDROCK, $in->getOffset(), 512);
+				$compound = $root->mustGetCompoundTag();
+			}catch(NbtException|NbtDataException $e){
 				throw PacketDecodeException::wrap($e, "Failed decoding NBT root");
-			}finally{
-				$in->setOffset($offset);
 			}
+			$in->setOffset($offset);
 		}elseif($nbtLen !== 0){
 			throw new PacketDecodeException("Unexpected fake NBT length $nbtLen");
 		}
@@ -100,7 +100,7 @@ class ItemStackExtraData{
 		if($this->nbt !== null){
 			LE::writeSignedShort($out, 0xffff);
 			Byte::writeUnsigned($out, 1); //TODO: NBT data version (?)
-			$out->writeByteArray((new LittleEndianNbtSerializer())->write(new TreeRoot($this->nbt)));
+			$out->writeByteArray(Nbt::write(new TreeRoot($this->nbt), Nbt::BEDROCK));
 		}else{
 			LE::writeSignedShort($out, 0);
 		}
