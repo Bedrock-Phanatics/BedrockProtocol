@@ -23,6 +23,8 @@ use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\BitSet;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\InputMode;
+use pocketmine\network\mcpe\protocol\types\InteractionMode;
 use pocketmine\network\mcpe\protocol\types\inventory\HandSlot;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
@@ -37,6 +39,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionD
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\ItemInteractionData;
 use pocketmine\network\mcpe\protocol\types\PlayerAuthInputFlags;
+use pocketmine\network\mcpe\protocol\types\PlayMode;
 use function array_fill;
 use function str_repeat;
 use function strlen;
@@ -94,7 +97,7 @@ final class InventoryActionsTest extends TestCase{
 				InventoryTransactionPacket::create(-7, null, NormalTransactionData::new($actions)),
 				PlayerAuthInputPacket::create(
 					new Vector3(1, 2, 3), 4, 5, 6, 0, 0, new BitSet(PlayerAuthInputFlags::NUMBER_OF_FLAGS),
-					1, 0, 0, new Vector2(0, 0), 123, new Vector3(0, 0, 0),
+					InputMode::MOUSE_KEYBOARD, PlayMode::NORMAL, InteractionMode::TOUCH, new Vector2(0, 0), 123, new Vector3(0, 0, 0),
 					new ItemInteractionData(-7, null, $transaction), null, null, null,
 					0, 0, new Vector3(0, 0, 0), new Vector2(0, 0)
 				)
