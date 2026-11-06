@@ -80,6 +80,7 @@ enum PersonaSkinPieceType : string{
 		"persona_capes" => self::CAPES,
 		"persona_classic_skin" => self::CLASSIC_SKIN,
 		"persona_emote" => self::EMOTE,
+		"persona_coco" => self::COCO,
 		"persona_unsupported" => self::UNSUPPORTED,
 	];
 
