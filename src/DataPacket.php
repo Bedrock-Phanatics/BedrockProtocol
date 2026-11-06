@@ -18,6 +18,8 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\DataDecodeException;
 use pmmp\encoding\VarInt;
+use pocketmine\nbt\NbtDataException;
+use pocketmine\utils\BinaryDataException;
 use function get_class;
 
 abstract class DataPacket implements Packet{
@@ -49,10 +51,11 @@ abstract class DataPacket implements Packet{
 	 * @throws PacketDecodeException
 	 */
 	final public function decode(ByteBufferReader $in) : void{
+		//value objects reject bad input with InvalidArgumentException or ValueError, which still just means a malformed packet
 		try{
 			$this->decodeHeader($in);
 			$this->decodePayload($in);
-		}catch(DataDecodeException | PacketDecodeException $e){
+		}catch(DataDecodeException | PacketDecodeException | NbtDataException | BinaryDataException | \InvalidArgumentException | \ValueError $e){
 			throw PacketDecodeException::wrap($e, $this->getName());
 		}
 	}
@@ -78,6 +81,10 @@ abstract class DataPacket implements Packet{
 	 *
 	 * @throws PacketDecodeException
 	 * @throws DataDecodeException
+	 * @throws NbtDataException
+	 * @throws BinaryDataException
+	 * @throws \InvalidArgumentException
+	 * @throws \ValueError
 	 */
 	abstract protected function decodePayload(ByteBufferReader $in) : void;
 
