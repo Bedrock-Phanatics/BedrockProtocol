@@ -75,7 +75,7 @@ class PlayerUpdateEntityOverridesPacket extends DataPacket implements Clientboun
 		$this->updateType = OverrideUpdateType::fromOrdinal(VarInt::readUnsignedInt($in));
 		$innerType = OverrideUpdateType::fromPacket(CommonTypes::getString($in));
 		if($innerType->value !== $this->updateType->value){
-			throw new \RuntimeException("Unexpected inner type, expected " . $this->updateType->value . ", got " . $innerType->value);
+			throw new PacketDecodeException("Unexpected inner type, expected " . $this->updateType->value . ", got " . $innerType->value);
 		}
 		if($this->updateType === OverrideUpdateType::SET_INT_OVERRIDE){
 			$this->intOverrideValue = LE::readSignedInt($in);
