@@ -23,10 +23,13 @@ use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\BitSet;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
+use pocketmine\network\mcpe\protocol\types\InputMode;
+use pocketmine\network\mcpe\protocol\types\InteractionMode;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\LabTableCombineStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\PlayerAuthInputFlags;
+use pocketmine\network\mcpe\protocol\types\PlayMode;
 use function array_fill;
 
 final class ItemStackRequestTest extends TestCase{
@@ -61,7 +64,7 @@ final class ItemStackRequestTest extends TestCase{
 		$request = new ItemStackRequest(7, array_fill(0, 61, new LabTableCombineStackRequestAction()), [], 0);
 		$packets = [
 			ItemStackRequestPacket::create([$request]),
-			PlayerAuthInputPacket::create(new Vector3(1, 2, 3), 4, 5, 6, 0, 0, new BitSet(PlayerAuthInputFlags::NUMBER_OF_FLAGS), 1, 0, 0, new Vector2(0, 0), 123, new Vector3(0, 0, 0), null, $request, null, null, 0, 0, new Vector3(0, 0, 0), new Vector2(0, 0))
+			PlayerAuthInputPacket::create(new Vector3(1, 2, 3), 4, 5, 6, 0, 0, new BitSet(PlayerAuthInputFlags::NUMBER_OF_FLAGS), InputMode::MOUSE_KEYBOARD, PlayMode::NORMAL, InteractionMode::TOUCH, new Vector2(0, 0), 123, new Vector3(0, 0, 0), null, $request, null, null, 0, 0, new Vector3(0, 0, 0), new Vector2(0, 0))
 		];
 		foreach($packets as $packet){
 			$out = new ByteBufferWriter();
