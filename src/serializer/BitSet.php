@@ -22,6 +22,7 @@ use function array_slice;
 use function array_values;
 use function count;
 use function intdiv;
+use const PHP_INT_MAX;
 
 class BitSet{
 	private const INT_BITS = PHP_INT_SIZE * 8;
@@ -124,7 +125,8 @@ class BitSet{
 		$currentShift = 0;
 
 		for($i = 0; $i < $length; $i += self::SHIFT){
-			$bits = $parts[$currentIndex] >> $currentShift;
+			//>> sign-extends, so drop the copies of the top bit before mixing in the next part
+			$bits = $currentShift === 0 ? $parts[$currentIndex] : ($parts[$currentIndex] >> $currentShift) & (PHP_INT_MAX >> ($currentShift - 1));
 			$nextShift = $currentShift + self::SHIFT;
 			if($nextShift >= self::INT_BITS){
 				$nextShift -= self::INT_BITS;
@@ -133,7 +135,7 @@ class BitSet{
 			$currentShift = $nextShift;
 
 			$last = $i + self::SHIFT >= $length;
-			$bits |= $last ? 0 : 0x80;
+			$bits = ($bits & 0x7f) | ($last ? 0 : 0x80);
 
 			Byte::writeUnsigned($out, $bits);
 			if($last){

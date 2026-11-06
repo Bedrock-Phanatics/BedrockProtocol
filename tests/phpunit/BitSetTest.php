@@ -14,11 +14,16 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\VarInt;
 use pocketmine\network\mcpe\protocol\serializer\BitSet;
+use function bin2hex;
+use function chr;
+use function in_array;
+use function range;
 
 class BitSetTest extends TestCase{
 
@@ -76,6 +81,42 @@ class BitSetTest extends TestCase{
 		$expectedResult->set(63, true);
 
 		self::assertEqualBitSets($expectedResult, $readTest);
+	}
+
+	/**
+	 * @return \Generator<string, array{int, list<int>}>
+	 */
+	public static function wideSetsProvider() : \Generator{
+		yield "top bit of the first part" => [128, [63]];
+		yield "both sides of the part boundary" => [128, [62, 63, 64]];
+		yield "last bit" => [128, [127]];
+		yield "every bit" => [70, range(0, 69)];
+	}
+
+	/**
+	 * @param list<int> $bits
+	 */
+	#[DataProvider("wideSetsProvider")]
+	public function testWideSetsWriteEachGroupOnce(int $length, array $bits) : void{
+		$set = new BitSet($length);
+		foreach($bits as $bit){
+			$set->set($bit, true);
+		}
+		$expected = "";
+		for($group = 0; $group * 7 < $length; ++$group){
+			$value = 0;
+			for($i = 0; $i < 7; ++$i){
+				if(in_array($group * 7 + $i, $bits, true)){
+					$value |= 1 << $i;
+				}
+			}
+			$expected .= chr($value | (($group + 1) * 7 < $length ? 0x80 : 0));
+		}
+
+		$out = new ByteBufferWriter();
+		$set->write($out);
+		self::assertSame(bin2hex($expected), bin2hex($out->getData()));
+		self::assertTrue($set->equals(BitSet::read(new ByteBufferReader($out->getData()), $length)));
 	}
 
 	private static function assertEqualBitSets(BitSet $a, BitSet $b) : void{
