@@ -144,6 +144,8 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 					$this->parameters[] = CommonTypes::getString($in);
 				}
 				break;
+			default:
+				throw new PacketDecodeException("Unknown TextPacket type {$this->type}");
 		}
 
 		$this->xboxUserId = CommonTypes::getString($in);
