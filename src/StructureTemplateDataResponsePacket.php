@@ -46,9 +46,7 @@ class StructureTemplateDataResponsePacket extends DataPacket implements Clientbo
 
 	protected function decodePayload(ByteBufferReader $in) : void{
 		$this->structureTemplateName = CommonTypes::getString($in);
-		if(CommonTypes::getBool($in)){
-			$this->nbt = new CacheableNbt(CommonTypes::getNbtCompoundRoot($in));
-		}
+		$this->nbt = CommonTypes::getBool($in) ? new CacheableNbt(CommonTypes::getNbtCompoundRoot($in)) : null;
 		$this->responseType = Byte::readUnsigned($in);
 	}
 
