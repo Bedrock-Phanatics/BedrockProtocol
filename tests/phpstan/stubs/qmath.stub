@@ -359,22 +359,20 @@ namespace quark\math {
     {
         private function __construct() {}
 
-        /** @return VoxelRayIterator lazy, a zero-length ray throws once iterated */
+        /** @return \Iterator<int, Vector3> a lazy VoxelRayIterator, a zero-length ray throws once iterated */
         public static function inDirection(Vector3 $start, Vector3 $directionVector, float $maxDistance): \Iterator {}
 
-        /** @return VoxelRayIterator lazy, a zero-length ray throws once iterated */
+        /** @return \Iterator<int, Vector3> a lazy VoxelRayIterator, a zero-length ray throws once iterated */
         public static function betweenPoints(Vector3 $start, Vector3 $end): \Iterator {}
     }
 
-    /** @implements \Iterator<int, Vector3> */
+    /** @implements \Iterator<mixed, mixed> current() and key() return null once the ray is exhausted */
     final class VoxelRayIterator implements \Iterator
     {
         private function __construct() {}
 
-        /** @return Vector3 null once the ray is exhausted */
         public function current(): ?Vector3 {}
 
-        /** @return int null once the ray is exhausted */
         public function key(): ?int {}
 
         public function next(): void {}
@@ -624,6 +622,13 @@ namespace quark\math\physics {
         public function setInvalid(int $x, int $y, int $z): void {}
 
         public function fill(float $resistance): void {}
+
+        /**
+         * Fills the cells of a chunk section that lie inside the grid from a SubChunk block layer.
+         * @param string $words PalettedBlockArray::getWordArray()
+         * @param string $resistances one little-endian double per palette entry, NAN marks its cells invalid
+         */
+        public function setSectionPalette(int $sectionX, int $sectionY, int $sectionZ, int $bitsPerBlock, string $words, string $resistances): void {}
 
         /** @param string $values little-endian doubles with y varying fastest, then z, then x. NAN marks an invalid cell. */
         public function setPacked(string $values): void {}
