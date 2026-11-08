@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\color\Color;
+use quark\color\Color;
 
 class MapDecoration{
 	public function __construct(

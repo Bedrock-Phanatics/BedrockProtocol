@@ -17,7 +17,7 @@ namespace pocketmine\network\mcpe\protocol;
 use PHPUnit\Framework\TestCase;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pocketmine\math\Vector3;
+use quark\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\shape\PacketShapeData;
 
 class DataPacketTest extends TestCase{

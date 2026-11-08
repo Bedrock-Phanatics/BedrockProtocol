@@ -18,7 +18,7 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
-use pocketmine\math\Vector3;
+use quark\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 class ChangeDimensionPacket extends DataPacket implements ClientboundPacket{

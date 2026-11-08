@@ -18,7 +18,7 @@ use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
-use pocketmine\math\Vector3;
+use quark\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 /**

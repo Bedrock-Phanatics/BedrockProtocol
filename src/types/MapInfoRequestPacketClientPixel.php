@@ -17,7 +17,7 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
-use pocketmine\color\Color;
+use quark\color\Color;
 use function intdiv;
 
 final class MapInfoRequestPacketClientPixel{

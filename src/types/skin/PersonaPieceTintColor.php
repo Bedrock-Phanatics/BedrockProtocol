@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\skin;
 
-use pocketmine\color\Color;
+use quark\color\Color;
 use function count;
 
 final class PersonaPieceTintColor{

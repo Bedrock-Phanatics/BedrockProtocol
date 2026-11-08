@@ -19,8 +19,8 @@ use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
 use pmmp\encoding\VarInt;
-use pocketmine\math\Vector2;
-use pocketmine\math\Vector3;
+use quark\math\Vector2;
+use quark\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 class CorrectPlayerMovePredictionPacket extends DataPacket implements ClientboundPacket{
@@ -88,8 +88,8 @@ class CorrectPlayerMovePredictionPacket extends DataPacket implements Clientboun
 		Byte::writeUnsigned($out, $this->predictionType);
 		CommonTypes::putVector3($out, $this->position);
 		CommonTypes::putVector3($out, $this->delta);
-		LE::writeFloat($out, $this->vehicleRotation->getX());
-		LE::writeFloat($out, $this->vehicleRotation->getY());
+		LE::writeFloat($out, $this->vehicleRotation->x);
+		LE::writeFloat($out, $this->vehicleRotation->y);
 		CommonTypes::writeOptional($out, $this->vehicleAngularVelocity, LE::writeFloat(...));
 		CommonTypes::putBool($out, $this->onGround);
 		VarInt::writeUnsignedLong($out, $this->tick);
