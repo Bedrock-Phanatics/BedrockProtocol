@@ -17,7 +17,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pocketmine\math\Vector3;
+use quark\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 class InteractPacket extends DataPacket implements ServerboundPacket{

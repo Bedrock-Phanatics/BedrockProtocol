@@ -17,8 +17,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\LE;
-use pocketmine\color\Color;
-use pocketmine\math\Vector2;
+use quark\color\Color;
+use quark\math\Vector2;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 
 /**

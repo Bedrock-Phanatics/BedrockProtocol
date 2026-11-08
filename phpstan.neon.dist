@@ -16,6 +16,8 @@ parameters:
 		- tests/phpstan/DummyPacketHandler.php
 	scanFiles:
 		- tests/phpstan/stubs/bedwire.stub
+		- tests/phpstan/stubs/qmath.stub
 	stubFiles:
 		- tests/phpstan/stubs/JsonMapper.stub
+		- tests/phpstan/stubs/qmath.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings

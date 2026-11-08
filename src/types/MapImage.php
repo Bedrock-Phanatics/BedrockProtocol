@@ -18,7 +18,7 @@ use pmmp\encoding\BE;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\DataDecodeException;
-use pocketmine\color\Color;
+use quark\color\Color;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use function count;
 
